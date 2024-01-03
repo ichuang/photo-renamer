@@ -14,7 +14,8 @@ def make_request_to_llava_via_llamafile_server(prompt, fname=None,
     Make a request to the llamafile server using the prompt and
     uploading fname as the image, if provided.  Return the response.
     '''
-    url = "http://localhost:8080/completion"
+    # url = "http://localhost:8080/completion"
+    url = "http://localhost:8081/completion"
 
     sys_prompt = "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions."
     user_prompt = "USER:[img-10]" + prompt
@@ -82,7 +83,7 @@ def rename_photos_using_llm(dirname):
     # replace dirname with absolute path
     dirname = os.path.abspath(dirname)
     for fname in sorted(list(glob.glob(dirname + "/*.[jJ][pP][gG]"))):
-        if len(os.path.basename(fname)) > 32 or "_" in fname:
+        if len(os.path.basename(fname)) > 32 or ("_" in fname and not fname.endswith(".MP.jpg")):
             print(f"Skipping {fname}")
             continue
         # call llava on the file
@@ -115,9 +116,13 @@ def rename_photos_using_llm(dirname):
         print(f"Renamed {fname} to {new_fname}")
 
 if __name__ == "__main__":
-    dirname = sys.argv[1]
-    if 1:
+    if 0:
+        dirname = sys.argv[1]
         rename_photos_using_llm(dirname)
+    elif 1:
+        for dirname in sys.argv[1:]:
+            print(f"Processing [{dirname}]", flush=True)
+            rename_photos_using_llm(dirname)
     elif 0:
         prompt = "What do you see, described in 20 words or less?"
         fname = sys.argv[1]
